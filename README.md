@@ -1,10 +1,32 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# Holidu frontend developer interview assignment
+
+Hi there! Congratulations on making it to the next step!
+
+This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app) and is using [Material-UI](https://material-ui.com/) and [Recharts](http://recharts.org/) to save you some time.
+
+
+Your task is to fetch the data from the mock API at `/api/people.json`, for example http://localhost:3000/api/people.json, and make it usable in the dashboard.
+
+
+The following functionality should be implemented:
+
+* Filter and sort the Scores Listing by any of the shown attributes, such as first name, last name, or country
+* Show the average score of the people in the data set grouped by country in a suitable visualization
+* Show the average score of the people in the data set grouped by gender in a suitable visualization
+
+Some tests for the implemented functionality would be nice, too. 😉
+
+
+If you have any questions, please send an email to your HR contact at Holidu.
+
+Good luck and happy coding!
+
 
 ## Available Scripts
 
 In the project directory, you can run:
 
-### `npm start`
+### `yarn start` or `npm start`
 
 Runs the app in the development mode.<br>
 Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
@@ -12,12 +34,12 @@ Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 The page will reload if you make edits.<br>
 You will also see any lint errors in the console.
 
-### `npm test`
+### `yarn test` or `npm test`
 
 Launches the test runner in the interactive watch mode.<br>
 See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
 
-### `npm run build`
+### `yarn build` or `npm run build`
 
 Builds the app for production to the `build` folder.<br>
 It correctly bundles React in production mode and optimizes the build for the best performance.
@@ -27,7 +49,7 @@ Your app is ready to be deployed!
 
 See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
 
-### `npm run eject`
+### `yarn eject` or `npm run eject`
 
 **Note: this is a one-way operation. Once you `eject`, you can’t go back!**
 
