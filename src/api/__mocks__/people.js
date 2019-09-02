@@ -1,0 +1,61 @@
+export const peopleData = [
+  {
+    id: "0",
+    first_name: "Murdock",
+    last_name: "Ledstone",
+    email: "mledstone0@mayoclinic.com",
+    gender: "Male",
+    city: "Olofström",
+    country: "SE",
+    score: null,
+    created_at: "2017-04-05T02:28:37Z",
+  },
+  {
+    id: "1",
+    first_name: "Sunshine",
+    last_name: "Mattusevich",
+    email: "smattusevich2@scribd.com",
+    gender: "Female",
+    city: "Meiyao",
+    country: "CN",
+    score: 69,
+    created_at: "2018-07-26T23:34:07Z",
+  },
+  {
+    id: "2",
+    first_name: "Jaclin",
+    last_name: "Casbourne",
+    email: "jcasbourne1@nifty.com",
+    gender: "Female",
+    city: "Kunvald",
+    country: "CZ",
+    score: 53,
+    created_at: "2017-01-03T23:13:01Z",
+  },
+  {
+    id: "3",
+    first_name: "Rainer",
+    last_name: "Burrows",
+    email: "rburrows4@i2i.jp",
+    gender: "Male",
+    city: "Faratsiho",
+    country: "MG",
+    score: 69,
+    created_at: "2019-06-05T16:09:27Z",
+  },
+  {
+    id: "4",
+    first_name: "Hadria",
+    last_name: "Dunsmuir",
+    email: "hdunsmuir3@typepad.com",
+    gender: null,
+    city: null,
+    country: "ID",
+    score: null,
+    created_at: "2017-01-13T04:17:49Z",
+  },
+];
+
+export async function fetchPeopleData() {
+  return peopleData;
+}
