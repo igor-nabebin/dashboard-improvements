@@ -1,68 +1,284 @@
 /* eslint-disable no-script-url */
 
-import React from 'react';
-import Link from '@material-ui/core/Link';
-import { makeStyles } from '@material-ui/core/styles';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import Title from './Title';
+import React from "react";
 
-// Generate Score Data
-function createData(id, firstName, lastName, email, gender, city, country, score, createdAt) {
-  return { id, firstName, lastName, email, gender, city, country, score, createdAt };
-}
+import Title from "./Title";
 
-const rows = [
-  createData("a67e6828-99d9-4d8d-9cd7-8aff12e95973", "Murdock", "Ledstone", "mledstone0@mayoclinic.com", "Male", "Olofström", "SE", null, "2017-04-05T02:28:37Z"),
-  createData("0d9d17cd-c3f4-476b-a089-ae0d973f5cd3", "Jaclin", "Casbourne", "jcasbourne1@nifty.com", "Female", "Kunvald", "CZ", 53, "2017-01-03T23:13:01Z"),
-  createData("8a9f557a-9a87-4555-a70e-c20a07eb9488", "Sunshine", "Mattusevich", "smattusevich2@scribd.com", "Female", "Meiyao", "CN", 69, "2018-07-26T23:34:07Z"),
-  createData("c87a857e-9b34-48f5-a182-4beffaa592ec", "Hadria", "Dunsmuir", "hdunsmuir3@typepad.com", null, null, "ID", null, "2017-01-13T04:17:49Z"),
-  createData("ef71bf15-3191-405f-b855-3f0072582568", "Rainer", "Burrows", "rburrows4@i2i.jp", "Male", "Faratsiho", "MG", 69, "2019-06-05T16:09:27Z"),
-];
+import Button from "@material-ui/core/Button";
+import { makeStyles } from "@material-ui/core/styles";
+import Table from "@material-ui/core/Table";
+import TableBody from "@material-ui/core/TableBody";
+import TableCell from "@material-ui/core/TableCell";
+import TableHead from "@material-ui/core/TableHead";
+import TableRow from "@material-ui/core/TableRow";
+import TableSortLabel from "@material-ui/core/TableSortLabel";
+import TextField from "@material-ui/core/TextField";
+import Grid from "@material-ui/core/Grid";
+import InputAdornment from "@material-ui/core/InputAdornment";
+import SearchIcon from "@material-ui/icons/Search";
+import FormControl from "@material-ui/core/FormControl";
+import Select from "@material-ui/core/Select";
+import InputLabel from "@material-ui/core/InputLabel";
+import MenuItem from "@material-ui/core/MenuItem";
+import Input from "@material-ui/core/Input";
 
 const useStyles = makeStyles(theme => ({
   seeMore: {
     marginTop: theme.spacing(3),
   },
+  textField: {
+    marginLeft: theme.spacing(1),
+    marginRight: theme.spacing(1),
+    width: 200,
+  },
+  visuallyHidden: {
+    border: 0,
+    clip: "rect(0 0 0 0)",
+    height: 1,
+    margin: -1,
+    overflow: "hidden",
+    padding: 0,
+    position: "absolute",
+    top: 20,
+    width: 1,
+  },
+  formControl: {
+    margin: theme.spacing(1),
+    minWidth: 120,
+  },
+  selectEmpty: {
+    marginTop: theme.spacing(2),
+  },
+  filterBlock: {
+    width: "auto",
+  },
 }));
 
-export default function ScoreTable() {
+const columns = [
+  {
+    id: "last_name",
+    label: "Last Name",
+    filterable: true,
+    filterType: "input",
+  },
+  {
+    id: "first_name",
+    label: "First Name",
+    filterable: true,
+    filterType: "input",
+  },
+  { id: "gender", label: "Gender", filterable: true, filterType: "select" },
+  { id: "city", label: "City", filterable: true, filterType: "input" },
+  { id: "country", label: "Country", filterable: true, filterType: "select" },
+  { id: "score", label: "Score", filterable: false, align: "right" },
+];
+
+const defaultRowsAmount = 10;
+
+const filterData = (data, query, key, strict = false) => {
+  return data.filter(row =>
+    strict
+      ? query === "" || row[key] === query
+      : row[key] && row[key].toLowerCase().includes(query.toLowerCase())
+  );
+};
+
+const sortData = (data, orderBy, order) => {
+  return [...data].sort((row1, row2) => {
+    if (
+      typeof row1[orderBy] === "string" ||
+      typeof row2[orderBy] === "string"
+    ) {
+      // Strings comparison
+      const [value1, value2] = [row1[orderBy] || "", row2[orderBy] || ""];
+      return value1.localeCompare(value2) * (order === "desc" ? -1 : 1);
+    } else if (
+      typeof row1[orderBy] === "number" ||
+      typeof row2[orderBy] === "number"
+    ) {
+      // Numbers comparison
+      const [value1, value2] = [row1[orderBy] || 0, row2[orderBy] || 0];
+      return (value1 - value2) * (order === "desc" ? -1 : 1);
+    } else {
+      // if e.g. both row1[orderBy] and row2[orderBy] are null
+      return 0;
+    }
+  });
+};
+
+export default function ScoreTable(props) {
+  const { data } = props;
+
+  const [isListExpanded, setIsListExpanded] = React.useState(false);
+  const [order, setOrder] = React.useState("asc");
+  const [orderBy, setOrderBy] = React.useState("last_name");
+  const [filterBy, setFilterBy] = React.useState("last_name");
+  const [searchQuery, setSearchQuery] = React.useState("");
+
+  const showMoreBtnHandler = () => {
+    setIsListExpanded(!isListExpanded);
+  };
+  const createSortHandler = sortBy => {
+    if (orderBy === sortBy) setOrder(order === "desc" ? "asc" : "desc");
+    setOrderBy(sortBy);
+  };
+  const searchInputHandler = event => setSearchQuery(event.target.value);
+  const searchByHandler = event => {
+    setFilterBy(event.target.value);
+    setSearchQuery("");
+  };
+  const filterHandler = event =>
+    setSearchQuery(event.target.value === "none" ? null : event.target.value);
+
+  const filterableColumns = columns.filter(column => column.filterable);
+  const getFilterInfo = filterId =>
+    columns.find(column => column.id === filterId);
   const classes = useStyles();
+  const filteredData = filterData(
+    data,
+    searchQuery,
+    [filterBy],
+    getFilterInfo(filterBy).filterType === "select"
+  );
+  const sortedData = sortData(filteredData, orderBy, order);
+  const rows = sortedData.slice(
+    0,
+    isListExpanded ? sortedData.length : defaultRowsAmount
+  );
+  const allParamValues = param => {
+    const allParamsSet = data.reduce((allValues, curPerson) => {
+      return allValues.add(curPerson[param]);
+    }, new Set());
+    return [...allParamsSet].sort();
+  };
+
   return (
     <React.Fragment>
-      <Title>Scores listing</Title>
+      <Grid
+        container
+        direction="row"
+        justify="space-between"
+        alignItems="center"
+      >
+        <Title id="table-title">Scores listing ({sortedData.length})</Title>
+        <Grid container className={classes.filterBlock} alignItems="flex-end">
+          {getFilterInfo(filterBy).filterType === "input" && (
+            <TextField
+              id="filter-input"
+              label={getFilterInfo(filterBy).label}
+              type="search"
+              className={classes.textField}
+              margin="normal"
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <SearchIcon />
+                  </InputAdornment>
+                ),
+              }}
+              value={searchQuery || ""}
+              onChange={searchInputHandler}
+            />
+          )}
+          {getFilterInfo(filterBy).filterType === "select" && (
+            <FormControl className={classes.formControl} id="filter-select">
+              <InputLabel shrink htmlFor="filter-label-placeholder">
+                {filterBy}
+              </InputLabel>
+              <Select
+                value={searchQuery !== null ? searchQuery : "none"}
+                onChange={filterHandler}
+                input={<Input name="filter" id="filter-label-placeholder" />}
+                displayEmpty
+                name="filter"
+                className={classes.selectEmpty}
+              >
+                <MenuItem value="">All</MenuItem>
+                {allParamValues(filterBy).map(param => (
+                  <MenuItem
+                    key={param}
+                    value={param || "none"}
+                    id={`filter-select-${param || "none"}`}
+                  >
+                    {param || "Not specified"}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          )}
+          <FormControl className={classes.formControl} id="filter-selector">
+            <InputLabel shrink htmlFor="filterBy-label-placeholder">
+              Search by
+            </InputLabel>
+            <Select
+              value={filterBy}
+              onChange={searchByHandler}
+              input={<Input name="filterBy" id="filterBy-label-placeholder" />}
+              displayEmpty
+              name="filterBy"
+              className={classes.selectEmpty}
+            >
+              {filterableColumns.map(column => (
+                <MenuItem
+                  key={column.id}
+                  id={`filter-selector-${column.id}`}
+                  value={column.id}
+                >
+                  {column.label}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Grid>
+      </Grid>
       <Table size="small">
         <TableHead>
           <TableRow>
-            <TableCell>Last name</TableCell>
-            <TableCell>First name</TableCell>
-            <TableCell>Gender</TableCell>
-            <TableCell>City</TableCell>
-            <TableCell>Country</TableCell>
-            <TableCell align="right">Score</TableCell>
+            {columns.map(column => (
+              <TableCell align={column.align} key={column.id}>
+                <TableSortLabel
+                  active={orderBy === column.id}
+                  direction={order}
+                  id={`head-${column.id}`}
+                  onClick={() => createSortHandler(column.id)}
+                >
+                  {column.label}
+                  {orderBy === column.id ? (
+                    <span className={classes.visuallyHidden}>
+                      {order === "desc"
+                        ? "sorted descending"
+                        : "sorted ascending"}
+                    </span>
+                  ) : null}
+                </TableSortLabel>
+              </TableCell>
+            ))}
           </TableRow>
         </TableHead>
         <TableBody>
           {rows.map(row => (
-            <TableRow key={row.id}>
-              <TableCell>{row.lastName}</TableCell>
-              <TableCell>{row.firstName}</TableCell>
-              <TableCell>{row.gender}</TableCell>
-              <TableCell>{row.city}</TableCell>
-              <TableCell>{row.country}</TableCell>
-              <TableCell align="right">{row.score}</TableCell>
+            <TableRow key={row.id} id={`id${row.id}`} className="person">
+              {columns.map(column => (
+                <TableCell
+                  key={column.id}
+                  id={`id${row.id}+${column.id}`}
+                  className={column.id}
+                  align={column.align}
+                >
+                  {row[column.id]}
+                </TableCell>
+              ))}
             </TableRow>
           ))}
         </TableBody>
       </Table>
-      <div className={classes.seeMore}>
-        <Link color="primary" href="#">
-          See more scores
-        </Link>
-      </div>
+      {sortedData.length > defaultRowsAmount && (
+        <div className={classes.seeMore}>
+          <Button color="primary" onClick={showMoreBtnHandler}>
+            {isListExpanded ? "See less scores" : "See more scores"}
+          </Button>
+        </div>
+      )}
     </React.Fragment>
   );
 }
